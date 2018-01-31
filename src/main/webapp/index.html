@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="zenvisage">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual TSD</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
+    <!-- <link href="css/draw.css" rel="stylesheet"> -->
+    <link href="css/graph.css" rel="stylesheet">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <!-- this div contains everything in the body -->
+
+    <div id="everything">
+      <!-- Modal -->
+      <form id="uploaderForm" action="/zv/fileUpload" enctype="multipart/form-data" method="post">
+        <div class="modal fade bd-example-modal-sm" id="uploaderModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Upload your own dataset</h4>
+              </div>
+              <div class="modal-body">
+                Dataset name<input id="datasetNameInput" type="text" name="datasetName"><br/><br/>
+                <div class="row">
+                  <div class="col-md-5">
+                    <input type="file" class="filestyle" data-classButton="btn btn-primary" data-input="false" data-classIcon="icon-plus" data-buttonText="Choose dataset file" name="csv">
+                  </div>
+                </div>
+              </div>
+                <div class="modal-footer">
+                <input id="submitButton" type="submit" class="btn btn-primary" value="Upload">
+                </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- this div contains the left-bar with the data information -->
+      <div id="left-bar">
+        <div id="left-top-bar" class="interface" ng-controller="datasetController">
+          <h3>
+            <img src="title.png" width="150" height="40">
+          </h3>
+          <div class="dropdown" id="dataset">
+            <h5><b>Dataset Upload</b><button type="button" ng-click="callLoadAxisInfoChildMethod()" class="textButton" data-toggle="modal"  data-target=".bd-example-modal-sm"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> </button></h5>
+            <!-- Button trigger modal -->
+            <select class="form-control" ng-change="onDatasetChange()" ng-model="selectedDataset" id="dataset-form-control">
+            </select>
+          </div>
+          <div ng-model="numOfData">
+          	<h5><b>Number of Series:</b></h5>{{numOfData}}
+          </div>
+          <div ng-model="numOfPoints">
+            <h5><b>Number of Points in each serie:</b></h5>{{numOfPoints}}
+          </div>
+        </div> <!-- end left-top bar -->
+        <br>
+        <div id="left-middle-bar" ng-controller="options-controller">
+          <h4>
+            <b>Similarity Search</b>
+          </h4>
+          <div id="num-results">
+            <div class="info-text"><b>Number of Results</b></div>
+            <div>
+              <input ng-model="numResults" class="form-control" type="text" id="num-results" name="number-of-results" value="50">
+            </div>
+          </div>
+          <br>
+          <div class="info-text"><b>Options</b></div>
+          <div class="checkbox">
+            <form>
+              <input ng-model="showScatterplot" id="showScatterplot" type="checkbox" name="show-scatterplot"><label for="showScatterplot">Show scatterplot</label><br>
+            </form>
+          </div>
+          <div class="checkbox">
+            <form>
+              <input ng-model="considerRange" id="considerRange" type="checkbox" name="considerRange"><label for="considerRange">Consider Time-Range</label><br>
+            </form>
+          </div>
+        </div>
+        <div id="left-bottom-bar" ng-controller="options-controller">
+        <h4>
+          <b>Cluster Search</b>
+        </h4>
+            <div class="info-text"><b>K-means Cluster Size</b></div>
+            <div>
+              <input ng-model="clusterSize" class="form-control" type="text" id="cluster-size" name="k-means-cluster-size" value="3">
+            </div>
+        </div>
+      </div> <!-- end left bar -->
+
+      <!-- this div contains the everything in the middle (aside from the left nav bar) -->
+      <div id="middle-bar">
+        <!-- this div contains the drawng interface-->
+        <div class="col-md-6" id="middle-top-bar" ng-controller="options-controller">
+          <h5><b>Sketchpad</b></h5>
+          <!-- drawing interface -->
+          <div id="draw-div">
+          </div>
+          <!-- drawing interface END-->
+        </div>
+        <!-- drawng interface + zql table END-->
+
+        <hr>
+        <div id="bottom-middle-bar">
+          <div id="middle-left" class="col-md-6">
+            <h5><b>Results</b></h5>
+            <div>
+              <table id="results-table"></table>
+            </div>
+          </div>
+          <div id="middle-right" class="col-md-6">
+            <div>
+              <table id="representative-table">
+                <tr class="middle-right-headers">
+                  <td><h5><b>Representative patterns </b></h5>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div>
+              <table id="outlier-table">
+                <tr class="middle-right-headers">
+                  <td><h5><b>Outliers </b></h5></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+    <script src="js/lib/jquery.min.js"></script>
+    <script src="js/lib/jquery-ui.min.js"></script>
+    <script src="js/lib/bootstrap.min.js"></script>
+    <script src="js/lib/bootstrap-filestyle.min.js"> </script>
+    <script src="js/lib/math.min.js"> </script>
+    <script src="js/lib/angular.min.js"></script>
+    <script src="js/lib/d3.v4.min.js"></script>
+    <script src="js/lib/d3-hexbin.v0.2.min.js"></script>
+    <script src="js/login.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/scatter.js"></script>
+    <script src="js/draw.js"></script>
+    <script src="js/query.js"></script>
+    <script src="js/helper.js"></script>
+    <!-- <script src="js/graph.js"></script> -->
+    <script src="js/fileUploader.js"></script>
+    <script src="js/renderplot.js"></script>
+    
+    <script>
+      // var tree = tree();
+      // tree.initialize();
+    </script>
+  </body>
+</html>
